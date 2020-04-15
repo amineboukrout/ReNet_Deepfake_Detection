@@ -1,0 +1,19 @@
+split 0:
+- CNN-LSTM accuracy: 98.2
+- CNN-BiLSTM accuracy: 98.72
+
+split 1:
+- CNN-LSTM accuracy: 97.89
+- CNN-BiLSTM accuracy: 99.91
+
+split 2:
+- CNN-LSTM accuracy: 
+- CNN-BiLSTM accuracy: 
+
+split 3:
+- CNN-LSTM accuracy: 
+- CNN-BiLSTM accuracy: 
+
+split 4:
+- CNN-LSTM accuracy: 
+- CNN-BiLSTM accuracy: 
