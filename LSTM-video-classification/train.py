@@ -83,19 +83,21 @@ def train(data_type, seq_length, model, saved_model=None,
             validation_data=val_generator,
             validation_steps=40,
             workers=4)
-    rm.model.save_weights('cnn_bilstm_VGGFace1.h5')
+    rm.model.save_weights('cnn_gru_VGGFace1.h5')
 
 # aws.amazon.com/careers/
 # aws university-recruiting
+
+# https://stackoverflow.com/questions/3430372/how-do-i-get-the-full-path-of-the-current-files-directory
 def main():
     """These are the main training settings. Set each before running
     this file."""
 
-    original_curdir = pathlib.Path(__file__).parent.absolute()
-    print(original_curdir)
-    os.chdir(os.path.join(original_curdir, 'data'))
-    subprocess.call(['python3','extract_files.py','mp4'])
-    os.chdir(original_curdir)
+    # original_curdir = pathlib.Path(__file__).parent.absolute`()
+    # print(original_curdir)
+    # os.chdir(os.path.join(original_curdir, 'data'))
+    # subprocess.call(['python3','extract_files.py','mp4'])
+    # os.chdir(original_curdir)`
 
     # if (len(sys.argv) == 5):
     seq_length = int(20)
@@ -116,9 +118,9 @@ def main():
     #     os.mkdir(checkpoints_dir)
 
     # model can be only 'lstm' or 'bilstm'
-    model = 'bilstm'
+    model = 'gru'
     saved_model = None  # None or weights file
-    load_to_memory = True # pre-load the sequences into memory
+    load_to_memory = False # pre-load the sequences into memory
     batch_size = 32
     nb_epoch = 100
     data_type = 'features'

@@ -1,3 +1,5 @@
+# source: https://github.com/kb22/Create-Face-Data-from-Images
+
 import sys
 import cv2
 import os

@@ -1,7 +1,7 @@
 """
 A collection of models we'll use to attempt to classify videos.
 """
-from keras.layers import Dense, Flatten, Dropout, ZeroPadding3D, MaxPooling2D, Bidirectional
+from keras.layers import Dense, Flatten, Dropout, ZeroPadding3D, MaxPooling2D, Bidirectional, GRU
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential, load_model
 from keras.optimizers import Adam, RMSprop
@@ -55,6 +55,11 @@ class ResearchModels():
             self.input_shape = (seq_length, features_length)
             print('input shape: {}'.format(self.input_shape))
             self.model = self.bilstm()
+        elif model == 'gru':
+            print("Loading gru model.")
+            self.input_shape = (seq_length, features_length)
+            print('input shape: {}'.format(self.input_shape))
+            self.model = self.gru()
         else:
             print("Unknown network.")
             sys.exit()
@@ -83,7 +88,7 @@ class ResearchModels():
         return model
 
     def bilstm(self):
-        """Build a simple LSTM network. We pass the extracted features from
+        """Build a simple BiLSTM network. We pass the extracted features from
         our CNN to this model predomenently."""
         # Model.
         model = Sequential()
@@ -97,6 +102,19 @@ class ResearchModels():
         # print(self.input_shape)
         # sys.exit()
 
+        return model
+    
+    def gru(self):
+        """Build a simple GRU network. We pass the extracted features from
+        our CNN to this model predomenently."""
+        # Model.
+        model = Sequential()
+        model.add(GRU(2048, return_sequences=False,
+                       input_shape=self.input_shape,
+                       dropout=0.5))
+        model.add(Dense(512, activation='relu'))
+        model.add(Dropout(0.5))
+        model.add(Dense(self.nb_classes, activation='softmax'))
         return model
 
 

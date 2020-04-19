@@ -9,6 +9,7 @@ LSTM-video-classification/__pycache__/*
 *.png
 *.csv
 *.h5
+.idea/*
 MesoNet/*
 training/*
 LSTM-video-classification/data/checkpoints/*
