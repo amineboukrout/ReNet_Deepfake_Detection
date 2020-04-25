@@ -11,6 +11,7 @@ import operator
 import threading
 from processor import process_image
 from keras.utils import to_categorical
+import sys
 
 class threadsafe_iterator:
     def __init__(self, iterator):
@@ -148,7 +149,7 @@ class DataSet():
 
                 if sequence is None:
                     print("Can't find sequence. Did you generate them?")
-                    raise
+                    sys.exit()
 
             X.append(sequence)
             y.append(self.get_class_one_hot(row[1]))

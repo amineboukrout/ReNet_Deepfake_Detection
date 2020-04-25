@@ -1,4 +1,5 @@
 LSTM-video-classification/__pycache__/*
+LSTM-video-classification/data/logs/*
 *.jpg
 *.rar
 *.zip
@@ -9,7 +10,7 @@ LSTM-video-classification/__pycache__/*
 *.png
 *.csv
 *.h5
-.idea/*
+/.idea/*
 MesoNet/*
 training/*
 LSTM-video-classification/data/checkpoints/*
