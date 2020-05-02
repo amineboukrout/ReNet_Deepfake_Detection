@@ -1,6 +1,7 @@
 from videos_to_frames import extract_frames_to_images
 from extract_faces import extract_faces
 import combine_images
+import split_data
 import subprocess
 
 if __name__ == '__main__':
@@ -24,3 +25,8 @@ if __name__ == '__main__':
     subprocess.call(['rm','-r','face_images', 'Dataset_final_images'])
 
     print('splitting dataset')
+    split_data.create_csv_vids(data_folder = 'Dataset_new')
+    split_data.get_traintest_dfs('df_videos.csv')
+    split_data.move_to_split_folders('train_df.csv')
+    split_data.move_to_split_folders('test_df.csv')
+    subprocess.call(['rm','-r','Dataset_new'])

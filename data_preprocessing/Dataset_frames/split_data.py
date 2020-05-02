@@ -22,7 +22,7 @@ def create_csv_vids(data_folder='Dataset_Face_Extracted'):
     df.to_csv('df_videos.csv', sep=',')
 # create_csv_vids('Dataset_final')
 
-def get_traintest_dfs_0(data_csv):
+def get_traintest_dfs(data_csv):
     df = pd.read_csv(data_csv)
     df.sample(frac=1)
     fracs = np.array([0.8, 0.2])
@@ -35,7 +35,7 @@ def get_traintest_dfs_0(data_csv):
     test_df = pd.DataFrame(test_df)
     test_df.to_csv('test_df.csv')
     return train_df, test_df
-# get_traintest_dfs_0('df_videos.csv')
+# get_traintest_dfs('df_videos.csv')
 
 def get_traintest_dfs_1(data_csv):
     df = pd.read_csv(data_csv)
@@ -46,7 +46,7 @@ def get_traintest_dfs_1(data_csv):
     return x_train, x_test, y_train, y_test
 # get_traintest_dfs_1('df_videos.csv')
 
-def move_to_split_folders(csv_file, data_folder='Dataset_Face_Extracted'):
+def move_to_split_folders(csv_file):
     df = pd.read_csv(csv_file)
     mew_data_folder = 'data'
 
