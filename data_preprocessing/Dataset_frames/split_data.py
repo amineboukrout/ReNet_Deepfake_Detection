@@ -80,8 +80,8 @@ def move_to_split_folders(csv_file, data_folder='Dataset_Face_Extracted'):
 
         shutil.copy(org_pth, org_pth_new)
         print('Copied {} --> {}'.format(org_pth, org_pth_new))
-move_to_split_folders('train_df.csv')
-move_to_split_folders('test_df.csv')
+# move_to_split_folders('train_df.csv')
+# move_to_split_folders('test_df.csv')
 
 # if __name__ == '___main__':
 #     get_traintest_dfs_0('df_videos.csv')

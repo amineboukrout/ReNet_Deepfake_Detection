@@ -21,17 +21,23 @@ def video_duration(video):
 
     cap.release()
 
-def combine_images(main_folder = 'Dataset_final_images'):
+def combine_images(main_folder = 'Dataset_final_images', new_folder = 'Dataset_new'):
     import pathlib
     original_curdir = pathlib.Path(__file__).parent.absolute()
 
+    if not os.path.isdir(new_folder): os.mkdir(new_folder)
+    if not os.path.isdir(os.path.join(new_folder, 'Deepfake')): os.mkdir(os.path.join(new_folder, 'Deepfake'))
+    if not os.path.isdir(os.path.join(new_folder, 'Real')): os.mkdir(os.path.join(new_folder, 'Real'))
+
     folders = [os.path.join(main_folder,'Deepfake'), os.path.join(main_folder,'Real')]
+    folders_new = [os.path.join(new_folder, 'Deepfake'), os.path.join(new_folder, 'Real')]
     for folder in folders:
-        if not os.path.isdir(folder+'_'): os.mkdir(folder+'_')
+        # if not os.path.isdir(folder+'_'): os.mkdir(folder+'_')
         video_folders = os.listdir(folder)
+
         # print(len(video_folders))
         for video_folder in video_folders:
-            video_file = os.path.join(original_curdir,folder+'_',video_folder+'.mp4')
+            video_file = os.path.join(original_curdir,folder,video_folder+'.mp4')
             input = os.path.join(folder, video_folder, '-%04d.jpg')
             # print(video_folder)
 
@@ -41,11 +47,14 @@ def combine_images(main_folder = 'Dataset_final_images'):
             # print(os.path.isdir('data_preprocessing/Dataset_frames/Dataset_final_images/Deepfake/videoplayback-9'))
             os.chdir(os.path.join(folder, video_folder))
 
-            print(os.listdir(os.curdir))
+            # print(os.listdir(os.curdir))
             # print(video_folder[:-3]+'-%1d.jpg')
-            print(video_folder)
-            print(video_file)
+            # print(video_folder)
+            # print(video_file)
             video_file = str(video_file).replace('(','-').replace(')','-')
+            if str(main_folder) in str(video_file):
+                video_file = str(video_file).replace(main_folder, new_folder)
+            # print(video_file)
             # sys.exit()
             # command = "/local/java/ffmpeg/ffmpeg -r 20 -i '{}' -vcodec mpeg4 -y {}".format(video_folder+'-%04d.jpg', video_file)
             command = "/local/java/ffmpeg/ffmpeg -framerate 20 -pattern_type glob -i '*.jpg' -vcodec mpeg4 -y {}".format(video_file)
@@ -56,41 +65,8 @@ def combine_images(main_folder = 'Dataset_final_images'):
             # print(os.listdir(os.curdir))
             # print(os.path.isfile(video_file))
             # sys.exit()
-combine_images()
-sys.exit()
-
-def ccombine_images():
-    # size = (720, 1280)
-    fourcc = cv2.VideoWriter_fourcc(*'DIVX')
-    fps = 1
-    # sys.exit()
-
-    folders = ['Deepfake', 'Real']
-    for folder in folders:
-        video_folders = os.listdir(folder)
-
-        for video_folder in video_folders:
-            video_frames = glob.glob(os.path.join(folder,video_folder,'*.jpg'))
-            video_frames = sorted(video_frames)
-            output_file = os.path.join(folder+'_',video_folder+'.avi')
-
-            frame_array = []
-            size = 0
-
-            for video_frame in video_frames:
-                img = cv2.imread(video_frame)
-                height, width, layers = img.shape
-                size = (height, width)
-                print('hhhhh')
-                frame_array.append(img)
-
-            vout = cv2.VideoWriter(output_file, fourcc, fps, size)
-            for i in range(len(frame_array)):
-                vout.write(frame_array[i])
-
-            vout.release()
-            sys.exit()
-# ccombine_images()
+# combine_images()
+# sys.exit()
 
 def copy_images(main_folder = 'face_images'):
     import pathlib
@@ -99,6 +75,10 @@ def copy_images(main_folder = 'face_images'):
 
     folders = [os.path.join(main_folder, 'Deepfake'), os.path.join(main_folder, 'Real')]
     output_dataset = 'Dataset_final_images'
+
+    if not os.path.isdir(output_dataset): os.mkdir(output_dataset)
+    if not os.path.isdir(os.path.join(output_dataset,'Deepfake')): os.mkdir(os.path.join(output_dataset,'Deepfake'))
+    if not os.path.isdir(os.path.join(os.path.join(output_dataset,'Real'))): os.mkdir(os.path.join(output_dataset,'Real'))
 
     for folder in folders:
         main_folder_, clas = folder.split(os.path.sep)
@@ -144,7 +124,7 @@ def copy_images(main_folder = 'face_images'):
                         frame_counter += 1
                     video_written_counter += 1
                     frames = []
-copy_images()
+# copy_images()
 
 def clean_mp4():
     folders = ['Deepfake_', 'Real_']
@@ -175,6 +155,7 @@ if see_equal_frames:
     while True:
         ret, frame = input_video.read()
         print(ret)
+
         # sys.exit()
         frames.append(frame)
         frame_number += 1
@@ -183,3 +164,7 @@ if see_equal_frames:
     for f in range(len(frames)-1):
         print(f)
         print(np.array_equal(frames[f],frames[f+1]))
+
+# if __name__ == '__main__':
+#     copy_images()
+#     combine_images()

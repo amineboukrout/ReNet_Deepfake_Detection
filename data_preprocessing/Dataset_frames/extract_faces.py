@@ -118,4 +118,4 @@ def extract_faces(new_dataset_name='face_images'):
                             # cv2.imwrite(os.path.join(base_dir, new_dataset_name, image.split('.')[0] + '_frame'+str(i) + '.' + image.split('.')[1]), frame)
             print('Done with a video!')
 
-extract_faces()
+# extract_faces()
