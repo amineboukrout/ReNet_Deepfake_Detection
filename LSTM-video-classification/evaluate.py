@@ -11,6 +11,8 @@ pd.set_option('display.max_colwidth',-1)
 import cv2
 from clasify import classify, print_confusion_matrix
 from extract_features import extract_features
+from sklearn.metrics import roc_auc_score, roc_curve, classification_report
+import matplotlib.pyplot as plt
 
 # df = pd.read_csv('data/data_file.csv', converters={'file': lambda x: str(x)},header=None)
 # df.columns = ['split','clas','file','no_of_frames']
@@ -32,6 +34,16 @@ from extract_features import extract_features
 # dff.to_csv('results.csv')
 # sys.exit()
 
+def plot_roc(fpr, tpr, roc_auc):
+    plt.title('Receiver Operating Characteristic')
+    plt.plot(fpr, tpr, label='AUC = %0.2f' % roc_auc)
+    # plt.legend(loc='lower right')
+    # plt.xlim([0, 1])
+    # plt.ylim([0, 1])
+    plt.ylabel('True Positive Rate')
+    plt.xlabel('False Positive Rate')
+    plt.savefig('roc.png')
+
 IMGWIDTH = 224
 sequences_dir = os.path.join('data', 'sequences')
 if not os.path.exists(sequences_dir):
@@ -39,7 +51,7 @@ if not os.path.exists(sequences_dir):
 
 extract_features(10, 2, (224,224,3))
 data = DataSet(
-            seq_length=10,
+            seq_length=20,
             class_limit=2,
           image_shape=(IMGWIDTH,IMGWIDTH,3)
         )
@@ -48,8 +60,8 @@ data_type = 'features'
 # print(test)
 x, y = data.get_all_sequences_in_memory('test', data_type)
 
-weights_file = 'cnn_lstm_VGGFace10_SPLIT4.h5'
-the_model = ResearchModels(2,'lstm',10,features_length=2622)
+weights_file = 'cnn_lstm_VGGFace.h5'
+the_model = ResearchModels(2,'lstm',20,features_length=2622)
 the_model.model.load_weights(weights_file)
 # results = the_model.model.evaluate(x_test_imgs,y_test, batch_size=32)
 # print('test loss: {} \n test acc: {}'.format(results[0],results[1]))
@@ -59,12 +71,12 @@ the_model.model.load_weights(weights_file)
 #     results = the_model.model.evaluate_generator(test_gen, steps=30)
 #     print('test loss: {} \t test acc: {}'.format(results[0],results[1])
 
-print(len(x))
+# print(len(x))
 preds = the_model.model.predict(x)
-print(len(preds))
-print(len(y))
-print(preds)
-print(y)
+# print(len(preds))
+# print(len(y))
+# print(preds)
+# print(y)
 
 preds_onehot, y_onehot = [], []
 
@@ -78,4 +90,21 @@ for i in range(len(x)):
 print(preds_onehot)
 print(y_onehot)
 
-print_confusion_matrix(y_onehot, preds_onehot)
+# print_confusion_matrix(y_onehot, preds_onehot)
+# print(classification_report(y_onehot, preds_onehot))
+
+
+
+preds_prob = the_model.model.predict_proba(x)
+preds_prob_onehot = []
+for i in range(len(x)):
+    preds_prob_onehot.append(np.argmax(preds_prob[i]))
+
+fpr, tpr,thresholds = roc_curve(y_onehot, preds_prob_onehot)
+# plot_roc_curve(fpr, tpr)
+auc_score=roc_auc_score(y_onehot, preds_prob_onehot)
+print(auc_score)
+print(fpr)
+print(tpr)
+
+plot_roc(fpr,tpr,auc_score)

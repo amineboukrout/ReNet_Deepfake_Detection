@@ -27,7 +27,7 @@ seq_length = 20
 saved_model = 'cnn_lstm_VGGFace10_SPLIT0.h5'
 video_file = 'data/test/Deepfake/46.mp4'
 
-def classify(video_file, seq_length=10, saved_model = './cnn_lstm_VGGFace10.h5'):
+def classify(video_file, seq_length=20, saved_model = './cnn_lstm_VGGFace10.h5'):
     capture = cv2.VideoCapture(os.path.join(video_file))
     width = capture.get(cv2.CAP_PROP_FRAME_WIDTH)   # float
     height = capture.get(cv2.CAP_PROP_FRAME_HEIGHT) # float
@@ -94,6 +94,7 @@ def print_confusion_matrix(y_true, y_pred):
     plt.yticks(np.arange(2), ['Fake', 'Real'], size = 16)
     plt.ylim([2, 0])
     plt.savefig('cm_split4')
+    return cm
 
 # df = pd.read_csv('data/data_file.csv', converters={'file': lambda x: str(x)})
 # df.columns = ['split','class','file','framesNo']

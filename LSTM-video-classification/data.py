@@ -43,7 +43,7 @@ class DataSet():
         self.class_limit = class_limit
 
         self.sequence_path = os.path.join('data', 'sequences')
-        self.max_frames = 300  # max number of frames a video can have for us to use it
+        self.max_frames = 21  # max number of frames a video can have for us to use it
 
         # Get the data.
         self.data = self.get_data()

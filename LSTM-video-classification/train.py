@@ -5,7 +5,8 @@ from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping, CSVLogg
 from models import ResearchModels
 from data import DataSet
 from extract_features import extract_features
-import time
+import numpy as np
+from sklearn.model_selection import KFold
 import os.path
 import sys
 import pathlib
@@ -83,7 +84,80 @@ def train(data_type, seq_length, model, saved_model=None,
             validation_data=val_generator,
             validation_steps=40,
             workers=4)
-    rm.model.save_weights('cnn_gru_VGGFace1.h5')
+    rm.model.save_weights('cnn_gru_VGGFace.h5')
+
+def train_cv(data_type, seq_length, model, saved_model=None,
+          class_limit=None, image_shape=None,
+          load_to_memory=False, batch_size=32, nb_epoch=100):
+    # Helper: Save the model.
+    # checkpointer = ModelCheckpoint(
+    #     filepath=os.path.join('data', 'checkpoints', model + '-' + data_type + \
+    #         '.{epoch:03d}-{val_loss:.3f}.hdf5'),
+    #     verbose=1,
+    #     save_best_only=True)
+
+    # Helper: TensorBoard
+    tb = TensorBoard(log_dir=os.path.join('data', 'logs', model))
+
+    # Helper: Stop when we stop learning.
+    early_stopper = EarlyStopping(patience=5)
+
+    # Helper: Save results.
+    # timestamp = time.time()
+    csv_logger = CSVLogger(os.path.join('data', 'logs', model + '-' + 'training-' + \
+        str(2) + '.log'))
+
+    # Get the data and process it.
+    if image_shape is None:
+        data = DataSet(
+            seq_length=seq_length,
+            class_limit=class_limit
+        )
+    else:
+        data = DataSet(
+            seq_length=seq_length,
+            class_limit=class_limit,
+            image_shape=image_shape
+        )
+
+    # Get samples per epoch.
+    # Multiply by 0.7 to attempt to guess how much of data.data is the train set.
+    steps_per_epoch = 120 #(len(data.data) * 0.7) // batch_size
+
+    if load_to_memory:
+        # Get data.
+        X, y = data.get_all_sequences_in_memory('train', data_type)
+        X_test, y_test = data.get_all_sequences_in_memory('test', data_type)
+        X = np.append(X, X_test, axis=0)
+        Y = np.append(y, y_test, axis=0)
+    else:
+        # Get generators.
+        generator = data.frame_generator(batch_size, 'train', data_type)
+        val_generator = data.frame_generator(batch_size, 'test', data_type)
+
+    # Get the model.
+    rm = ResearchModels(len(data.classes), model, seq_length, saved_model, features_length=2622)
+
+    # Fit!
+    if load_to_memory:
+        n_split = 5
+
+        # Use standard fit.
+        for train_index, test_index in KFold(n_split).split(Y):
+            x_train, x_test = X[train_index], X[test_index]
+            y_train, y_test = Y[train_index], Y[test_index]
+
+            rm.model.fit(
+                x_train,
+                y_train,
+                batch_size=batch_size,
+                validation_data=(x_test, y_test),
+                verbose=1,
+                callbacks=[tb, early_stopper, csv_logger],
+                epochs=nb_epoch)
+
+            print('Model evaluation ', rm.model.evaluate(x_test, y_test))
+    rm.model.save_weights('cnn_gru_VGGFace.h5')
 
 # aws.amazon.com/careers/
 # aws university-recruiting
@@ -117,17 +191,17 @@ def main():
     # if not os.path.exists(checkpoints_dir):
     #     os.mkdir(checkpoints_dir)
 
-    # model can be only 'lstm' or 'bilstm'
+    # model can be only 'lstm' or 'bilstm' or 'gru'
     model = 'gru'
     saved_model = None  # None or weights file
-    load_to_memory = False # pre-load the sequences into memory
+    load_to_memory = True # pre-load the sequences into memory
     batch_size = 32
     nb_epoch = 100
     data_type = 'features'
     image_shape = (image_height, image_width, 3)
 
     extract_features(seq_length=seq_length, class_limit=class_limit, image_shape=image_shape)
-    train(data_type, seq_length, model, saved_model=saved_model,
+    train_cv(data_type, seq_length, model, saved_model=saved_model,
           class_limit=class_limit, image_shape=image_shape,
           load_to_memory=load_to_memory, batch_size=batch_size, nb_epoch=nb_epoch)
 
